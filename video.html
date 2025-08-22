@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>视频播放</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 20px; }
+    #player { width: 100%; max-width: 960px; background: #000; aspect-ratio: 16/9; }
+  </style>
+</head>
+<body>
+  <h1>视频播放</h1>
+
+  <video id="player" controls preload="metadata"></video>
+
+  <!-- 从 jsDelivr 引入 hls.js（也可改为本地托管） -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+  <script>
+    (function () {
+      var video = document.getElementById('player');
+      var src = '/assets/hls/myvideo/master.m3u8';
+
+      if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        // Safari（iOS/macOS）原生支持
+        video.src = src;
+      } else if (window.Hls && Hls.isSupported()) {
+        var hls = new Hls({ maxBufferLength: 30 });
+        hls.loadSource(src);
+        hls.attachMedia(video);
+      } else {
+        // 兜底：提供下载链接
+        var link = document.createElement('a');
+        link.href = src;
+        link.textContent = 'Your browser does not support HLS. Click to download.';
+        video.parentNode.insertBefore(link, video);
+        video.remove();
+      }
+    })();
+  </script>
+</body>
+</html>
